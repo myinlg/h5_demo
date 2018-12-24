@@ -295,13 +295,17 @@
         </a>
       </li>
     </ul>
-    <div class="test-fixed"></div>
+    <Footer/>
   </div>
 </template>
 
 <script>
+import Footer from '@/components/Footer'
 export default {
   name: 'Home',
+  components:{
+    Footer
+  },
   data () {
     return {
       msg: 'Welcome to Your Vue.js App'
@@ -337,8 +341,9 @@ li {
 .test-fixed {
   position: fixed;
   width: 100%;
-  height: 100px;
   background-color: #ff3030;
+  height: calc(100px + env(safe-area-inset-bottom));
+  min-height: 100px;
   z-index: 1000;
   bottom: 0;
 }
