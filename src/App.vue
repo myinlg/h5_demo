@@ -1,5 +1,5 @@
 <template>
-  <div id="app" class="scroll-wrap">
+  <div id="app">
     <router-view/>
   </div>
 </template>
@@ -64,20 +64,16 @@ export default {
   }
 }
 </script>
-<style>
+<style lang="less">
+@import '~vux/src/styles/reset.less';
 #app {
+  position: relative;
+  width: 100%;
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   min-height: 100%;
-  text-align: center;
   color: #2c3e50;
-  /* width: 100%;
-  height: 100%;
-  overflow-y: auto; */
-}
-* {
-  box-sizing: border-box;
 }
 
 @font-face {

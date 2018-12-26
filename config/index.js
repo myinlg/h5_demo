@@ -9,8 +9,14 @@ module.exports = {
     // Paths
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
-    proxyTable: {},
-
+    proxyTable: {
+      '/': {
+        target: 'https://liqun-m.morning-star.cn/',
+        // target: 'https://lqws.liqunshop.com/',
+        secure: true,
+        changeOrigin: true,
+      },
+    },
     // Various Dev Server settings
     host: '172.16.60.110', // can be overwritten by process.env.HOST
     port: 8082, // can be overwritten by process.env.PORT, if port is in use, a free one will be determined

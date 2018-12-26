@@ -1,10 +1,9 @@
 <template>
   <div class="footer">
-    <div class="item" v-for="(item,index) in footerList" :key="index">
+    <div class="item" v-for="(item,index) in footerList" :key="index" @click="$router.push({ name: item.routerName})">
       <div>
-        <!-- <img v-if="$route.name === 'index'" src="./img/fuwu.png" alt=""> -->
-        <img :src="item.imgUrl" alt="">
-        <p :class="{ 'active' : $route.name === 'index'}">服务</p>
+        <img :src="$route.name === item.routerName?item.activeImgUrl:item.imgUrl" alt="">
+        <p :class="{ 'active' : $route.name === item.routerName}">{{item.text}}</p>
       </div>
     </div>
   </div>
@@ -15,11 +14,11 @@ export default {
   data(){
     return {
       footerList:[
-        { imgUrl:require('./img/fuwu1.png'),activeImgUrl:require('./img/fuwu.png'),text:'服务',routerName:'index' },
-        { imgUrl:require('./img/buy1.png'),activeImgUrl:require('./img/buy.png'),text:'购物',routerName:'index' },
-        { imgUrl:require('./img/youhui1.png'),activeImgUrl:require('./img/youhui.png'),text:'优惠',routerName:'index' },
-        { imgUrl:require('./img/gouwuche1.png'),activeImgUrl:require('./img/gouwuche.png'),text:'购物车',routerName:'index' },
-        { imgUrl:require('./img/my1.png'),activeImgUrl:require('./img/my.png'),text:'我的',routerName:'index' },
+        { imgUrl:require('./img/fuwu1.png'),activeImgUrl:require('./img/fuwu.png'),text:'服务',routerName:'IndexView' },
+        { imgUrl:require('./img/buy1.png'),activeImgUrl:require('./img/buy.png'),text:'购物',routerName:'index_buy' },
+        { imgUrl:require('./img/youhui1.png'),activeImgUrl:require('./img/youhui.png'),text:'优惠',routerName:'index_coupon' },
+        { imgUrl:require('./img/gouwuche1.png'),activeImgUrl:require('./img/gouwuche.png'),text:'购物车',routerName:'index_cart' },
+        { imgUrl:require('./img/my1.png'),activeImgUrl:require('./img/my.png'),text:'我的',routerName:'index_my' },
       ]
     }
   }
@@ -29,8 +28,8 @@ export default {
 .footer {
   position: fixed;
   width: 100%;
-  height: calc(104px + env(safe-area-inset-bottom));
-  min-height: 104px;
+  height: calc(100px + env(safe-area-inset-bottom));
+  min-height: 100px;
   background-color: #fff;
   bottom: 0;
   left: 0;
@@ -40,7 +39,7 @@ export default {
   .item {
     position: relative;
     flex: 1;
-    height: 104px;
+    height: 100px;
     text-align: center;
     display: flex;
     align-items: center;

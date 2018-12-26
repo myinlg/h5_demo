@@ -4,153 +4,117 @@
       @infinite-scroll="loadmore"
       :top-load-method="refresh"
       @scroll="scrollEvet">
-      <ul class="list">
-        <li v-for="(item,index) in dataList" :key="index">
-          {{ item }}
-        </li>
-      </ul>
+      <div class="list">
+        <slot name="item" v-for="item in dataList" :item="item">
+          {{item}}
+        </slot>
+      </div>
       <div class="loading-bar">
-        <svg class="icon icon-loading"
-            aria-hidden="true">
-          <use xlink:href="#icon-l
-</template>oading"></use>
-        </svg>
         加载中...
       </div>
     </pull-to>
   </div>
 </template>
 <script>
-  export default {
-    name: 'PagingList',
-    props:{
-      loadDistance:{
-        type:Number,
-        default:0
+import common from '@/common/common'
+export default {
+  name: 'PagingList',
+  props:{
+    url:{ //请求接口路径
+      type:String,
+      default:''
+    },
+    pageSize:{ //每页加载数据量
+      type:Number,
+      default:0
+    },
+    loadDistance:{ //距离底部x距离时开始加载
+      type:Number,
+      default:0
+    }
+  },
+  data() {
+    return {
+      dataList:[],
+      loadding:false,//加载中
+      startNum:0,
+      isFresh:false,//是否是下拉刷新页面
+    };
+  },
+  created(){
+    // new VConsole();
+    this.getList();
+  },
+  methods: {
+    loadmore(){
+      if(!this.loadDistance){
+        this.getList();
       }
     },
-    data() {
-      return {
-        dataList: [
-          '(ง •̀_•́)ง', '(´・ω・`) ', '（/TДT)/ ', '>ㅂ<',
-          'o(*≧▽≦)ツ', '(≖ ‿ ≖)✧', '(o^∇^o)ﾉ', ' (´・ω・)ﾉ',
-          '(´・ω・`)', 'ヽ(･ω･｡)ﾉ', '(｀･ω･´)', '╰(*°▽°*)╯',
-          '╮(￣▽￣)╭', '(￣▽￣)~*', '(⊙ˍ⊙)', '(￣0 ￣)y'
-        ],
-        iconLink: '',
-        loadding:false,//加载中
-      };
-    },
-    created(){
-      // new VConsole();
-    },
-    methods: {
-      loadmore(){
-        if(!this.loadDistance){
-          this.getMore();
+    getList(loaded){
+      console.log(this.url);
+      if(this.loadding){ //请求数据时不允许再次发送请求
+        return
+      }
+      if(this.url){
+        let params = { startNum: this.startNum }
+        if(this.pageSize){
+          params = { ...params, ...{ pageSize: this.pageSize } }
         }
-      },
-      getMore() {
         this.loadding = true;
-        setTimeout(() => {
-          this.dataList = this.dataList.concat(this.dataList);
+        common.ajax({
+          url: this.url,
+          data: params
+        }).then(res=>{
           this.loadding = false;
-        }, 500);
-      },
-      refresh(loaded){
-        setTimeout(() => {
-          this.dataList = [
-            '(ง •̀_•́)ง', '(´・ω・`) ', '（/TДT)/ ', '>ㅂ<',
-            'o(*≧▽≦)ツ', '(≖ ‿ ≖)✧', '(o^∇^o)ﾉ', ' (´・ω・)ﾉ',
-            '(´・ω・`)', 'ヽ(･ω･｡)ﾉ', '(｀･ω･´)', '╰(*°▽°*)╯',
-            '╮(￣▽￣)╭', '(￣▽￣)~*', '(⊙ˍ⊙)', '(￣0 ￣)y'
-          ]
-          loaded && loaded('done');
-        }, 500);
-        // loaded && loaded('fail');
-      },
-      scrollEvet(el){
-        if(!this.loadDistance){
-          return;
-        }
-        let scrollTop = el.target.scrollTop;
-        let scrollHeight = el.target.scrollHeight;
-        let clientHeight = el.target.clientHeight;
-        let isBottom = (clientHeight + scrollTop + this.loadDistance) >= scrollHeight;
-        if(isBottom&&!this.loadding){
-          this.getMore();
-        }
+          if(res.code===1000){
+            this.startNum = res.data.startNum||this.startNum;
+            if(this.isFresh){ //若是刷新则重置list
+              this.dataList = [];
+            }
+            let list = res.data.list;
+            this.dataList = this.dataList.concat(list||[]);
+            loaded && loaded('done');
+          } else {
+            loaded && loaded('fail');
+          }
+          this.isFresh = false;
+        })
+      }
+    },
+    //下拉刷新
+    refresh(loaded){
+      this.startNum = 0;
+      this.isFresh = true;
+      this.getList(loaded);
+    },
+    //滚动事件调用
+    scrollEvet(el){
+      if(!this.loadDistance){
+        return;
+      }
+      let scrollTop = el.target.scrollTop;
+      let scrollHeight = el.target.scrollHeight;
+      let clientHeight = el.target.clientHeight;
+      let isBottom = (clientHeight + scrollTop + this.loadDistance) >= scrollHeight;
+      if(isBottom&&!this.loadding){
+        this.getMore();
       }
     }
-  };
+  }
+};
 </script>
 <style scoped lang="scss">
 .paging-list {
   position: relative;
   width: 100%;
-  max-height: 100%;
+  height: 100%;
   color: #333;
   font-size: 24px;
-}
-ul {
-  list-style: none;
-  padding: 0;
-}
-.icon {
-  width: 1em;
-  height: 1em;
-  vertical-align: -0.15em;
-  fill: currentColor;
-  overflow: hidden;
-}
-.list {
-  font-size: 32px;
-
-  li:nth-child(even) {
-    background: #eee;
-  }
-
-  li {
-    padding-left: 30px;
-    height: 100px;
-    line-height: 100px;
-    background: #fff;
-
-    a {
-      display: block;
-      height: 100%;
-    }
-
-    .icon-arrow {
-      display: inline-block;
-      float: right;
-      margin-right: 30px;
-      height: 100%;
-      width: 40px;
-      color: #444;
-    }
-  }
-}
-.loading-bar {
-  height: 80px;
-  text-align: center;
-  line-height: 80px;
-}
-
-.icon-loading {
-  transform: rotate(0deg);
-  animation-name: loading;
-  animation-duration: 3s;
-  animation-iteration-count: infinite;
-  animation-direction: alternate;
-}
-
-@keyframes loading {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
+  .loading-bar {
+    height: 80px;
+    text-align: center;
+    line-height: 80px;
   }
 }
 </style>

@@ -5,7 +5,6 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'IndexView',
       redirect: '/index',
     },
     {
@@ -14,6 +13,14 @@ export default new Router({
       component: resolve => require(['@/pages/index/index.vue'], resolve),
       meta: {
         title: '首页',
+      },
+    },
+    {
+      path: '/buy',
+      name: 'index_buy',
+      component: resolve => require(['@/pages/index/buy.vue'], resolve),
+      meta: {
+        title: '购物',
       },
     },
     {
